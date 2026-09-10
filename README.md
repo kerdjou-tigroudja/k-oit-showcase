@@ -70,7 +70,7 @@ graph TD
     FastAPIApp --> Orchestrator
     Orchestrator -.->|Sanitized Spans & Metrics| BigQuery
     Orchestrator -.->|System Audit Logs| CloudLogging
-    Advisor -->|Proposes Action Plan (human_approval_required=True)| OnCallSRE
+    Advisor -->|Proposes Action Plan - Human Approval Gate| OnCallSRE
     OnCallSRE -->|Approves & Executes| MitigationRunbook
 ```
 
