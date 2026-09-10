@@ -1,0 +1,114 @@
+{
+  "total_cases": 10,
+  "passed_cases": 10,
+  "root_cause_accuracy_percent": 100.0,
+  "severity_accuracy_percent": 100.0,
+  "symptom_isolation_rate_percent": 100.0,
+  "human_in_the_loop_compliance_percent": 100.0,
+  "avg_processing_latency_ms": 0.26,
+  "baseline_manual_mttr_min": 45.0,
+  "k_oit_assisted_mttr_min": 11.25,
+  "mttr_reduction_percent": 75.0,
+  "case_results": [
+    {
+      "eval_case_id": "sre_db_pool_01",
+      "scenario": "db_pool_exhaustion",
+      "root_cause_service": "order-service",
+      "symptoms_count": 2,
+      "severity": "CRITICAL",
+      "hitl_enforced": true,
+      "latency_ms": 0.59,
+      "verdict": "PASS"
+    },
+    {
+      "eval_case_id": "sre_db_pool_02",
+      "scenario": "db_pool_exhaustion",
+      "root_cause_service": "order-service",
+      "symptoms_count": 2,
+      "severity": "CRITICAL",
+      "hitl_enforced": true,
+      "latency_ms": 0.3,
+      "verdict": "PASS"
+    },
+    {
+      "eval_case_id": "sre_oom_01",
+      "scenario": "oom_crash",
+      "root_cause_service": "recommendation-worker",
+      "symptoms_count": 1,
+      "severity": "CRITICAL",
+      "hitl_enforced": true,
+      "latency_ms": 0.27,
+      "verdict": "PASS"
+    },
+    {
+      "eval_case_id": "sre_oom_02",
+      "scenario": "oom_crash",
+      "root_cause_service": "recommendation-worker",
+      "symptoms_count": 1,
+      "severity": "CRITICAL",
+      "hitl_enforced": true,
+      "latency_ms": 0.19,
+      "verdict": "PASS"
+    },
+    {
+      "eval_case_id": "sre_upstream_01",
+      "scenario": "upstream_api_timeout",
+      "root_cause_service": "payment-service",
+      "symptoms_count": 1,
+      "severity": "CRITICAL",
+      "hitl_enforced": true,
+      "latency_ms": 0.18,
+      "verdict": "PASS"
+    },
+    {
+      "eval_case_id": "sre_upstream_02",
+      "scenario": "upstream_api_timeout",
+      "root_cause_service": "payment-service",
+      "symptoms_count": 1,
+      "severity": "CRITICAL",
+      "hitl_enforced": true,
+      "latency_ms": 0.35,
+      "verdict": "PASS"
+    },
+    {
+      "eval_case_id": "sre_tls_01",
+      "scenario": "tls_cert_expiry",
+      "root_cause_service": "api-ingress",
+      "symptoms_count": 1,
+      "severity": "CRITICAL",
+      "hitl_enforced": true,
+      "latency_ms": 0.17,
+      "verdict": "PASS"
+    },
+    {
+      "eval_case_id": "sre_tls_02",
+      "scenario": "tls_cert_expiry",
+      "root_cause_service": "api-ingress",
+      "symptoms_count": 1,
+      "severity": "CRITICAL",
+      "hitl_enforced": true,
+      "latency_ms": 0.14,
+      "verdict": "PASS"
+    },
+    {
+      "eval_case_id": "sre_disk_01",
+      "scenario": "disk_full",
+      "root_cause_service": "audit-logging-node",
+      "symptoms_count": 1,
+      "severity": "CRITICAL",
+      "hitl_enforced": true,
+      "latency_ms": 0.2,
+      "verdict": "PASS"
+    },
+    {
+      "eval_case_id": "sre_disk_02",
+      "scenario": "disk_full",
+      "root_cause_service": "audit-logging-node",
+      "symptoms_count": 1,
+      "severity": "CRITICAL",
+      "hitl_enforced": true,
+      "latency_ms": 0.19,
+      "verdict": "PASS"
+    }
+  ]
+}

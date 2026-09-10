@@ -1,0 +1,67 @@
+{
+  "name": "k_oit",
+  "displayName": "K-OIT — Operations Incident Triage",
+  "description": "Autonomous SRE Copilot & Multi-Signal Incident Triage Engine for Cloud-Native Distributed Architectures.",
+  "version": "0.1.0",
+  "author": "Kerdjou Tigroudja (https://kerdjou.dev)",
+  "license": "Apache-2.0",
+  "runtime": {
+    "platform": "Google Cloud Run (Fully Managed)",
+    "region": "europe-west9 (Paris, France - Sovereign SecNumCloud)",
+    "framework": "Google Agent Development Kit (ADK 2.0)",
+    "llm_inference": "Gemini 3.7 Flash via Vertex AI / Agent Platform",
+    "endpoint": "https://k-oit-1096821601497.europe-west9.run.app/a2a/app"
+  },
+  "evaluation_metrics": {
+    "golden_set_scenarios": 10,
+    "golden_set_pass_rate": "100.0%",
+    "root_cause_accuracy": "100.0%",
+    "simulated_mttr_reduction": "75.0%",
+    "average_inference_latency_ms": 0.15
+  },
+  "capabilities": {
+    "streaming": true,
+    "human_in_the_loop_gate": true,
+    "chaos_simulator": true,
+    "bigquery_analytics": true
+  },
+  "skills": [
+    {
+      "id": "chaos_simulation",
+      "name": "Chaos Engineering Simulator",
+      "description": "Deterministic injection of 5 real-world production incident scenarios (db pool, OOM, timeout, TLS expiry, disk full)"
+    },
+    {
+      "id": "telemetry_ingestion",
+      "name": "OpenTelemetry Multi-Signal Ingestion",
+      "description": "Multi-source OpenTelemetry ingestion of metrics, traces, and structured log events"
+    },
+    {
+      "id": "causal_correlation",
+      "name": "Causal Graph Correlation",
+      "description": "Causal correlation engine isolating true root causes from cascading collateral symptoms"
+    },
+    {
+      "id": "sre_diagnosis",
+      "name": "Automated SRE Diagnosis",
+      "description": "Automated severity assessment and blast-radius impact analysis across microservices topology"
+    },
+    {
+      "id": "hitl_mitigation",
+      "name": "Human-in-the-Loop Mitigation Generation",
+      "description": "Synthesis of non-destructive mitigation runbooks with rollback and verification scripts requiring on-call approval"
+    }
+  ],
+  "supportedInterfaces": [
+    {
+      "protocol": "JSON-RPC 2.0",
+      "binding": "A2A",
+      "url": "https://k-oit-1096821601497.europe-west9.run.app/a2a/app"
+    },
+    {
+      "protocol": "HTTP",
+      "binding": "Well-Known Agent Card",
+      "url": "https://k-oit-1096821601497.europe-west9.run.app/a2a/app/.well-known/agent-card.json"
+    }
+  ]
+}
