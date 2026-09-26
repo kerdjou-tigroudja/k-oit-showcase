@@ -1,9 +1,9 @@
 [project]
 name = "k-oit"
 version = "0.1.0"
-description = ""
+description = "Autonomous SRE Copilot & Multi-Signal Incident Triage Engine for Cloud-Native Distributed Architectures on Google Cloud Platform."
 authors = [
-    {name = "Your Name", email = "your@email.com"},
+    {name = "Kerdjou Tigroudja", email = "contact@kerdjou.dev"},
 ]
 
 
@@ -62,14 +62,14 @@ select = [
 ignore = ["E501", "C901", "B006"] # ignore line too long, too complex
 
 [tool.ruff.lint.isort]
-known-first-party = ["app", "frontend"]
+known-first-party = ["app"]
 
 [tool.ty]
 # ty is Astral's Rust-based type checker (same team as ruff/uv)
 # See: https://docs.astral.sh/ty/
 
 [tool.ty.environment]
-python-version = "3.10"
+python-version = "3.12"
 
 [tool.ty.src]
 exclude = [".venv/**"]
@@ -87,7 +87,7 @@ deprecated = "ignore"
 
 [tool.codespell]
 ignore-words-list = "rouge"
-skip = "./locust_env/*,uv.lock,.venv,./frontend,**/package-lock.json"
+skip = "uv.lock,.venv,**/package-lock.json"
 
 
 [build-system]
@@ -100,6 +100,6 @@ pythonpath = "."
 asyncio_default_fixture_loop_scope = "session"
 
 [tool.hatch.build.targets.wheel]
-packages = ["app","frontend"]
+packages = ["app"]
 
 
