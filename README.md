@@ -121,7 +121,7 @@ cd k-oit-showcase
 uv sync
 ```
 
-### 3. Run Autonomous Unit Test Suite (14 tests, 100% Mocked/Offline)
+### 3. Run Autonomous Unit Test Suite (12 tests, 100% Mocked/Offline)
 ```bash
 uv run pytest tests/unit/ -v
 ```
