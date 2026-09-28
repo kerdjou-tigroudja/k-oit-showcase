@@ -122,9 +122,25 @@ def run_benchmark() -> dict[str, Any]:
         "case_results": results,
     }
 
-    # Save to artifacts
+    return summary
+
+
+if __name__ == "__main__":
+    summary = run_benchmark()
+
+    # Save to artifacts only when invoked as a script. Unit tests call
+    # run_benchmark() and assert the returned dict.
     artifacts_dir = Path(__file__).parents[1] / "artifacts"
     artifacts_dir.mkdir(parents=True, exist_ok=True)
+
+    total_cases = summary["total_cases"]
+    root_cause_acc = summary["root_cause_accuracy_percent"]
+    severity_acc = summary["severity_accuracy_percent"]
+    symptom_isolation_rate = summary["symptom_isolation_rate_percent"]
+    hitl_rate = summary["human_in_the_loop_compliance_percent"]
+    avg_latency = summary["avg_processing_latency_ms"]
+    mttr_reduction_percent = summary["mttr_reduction_percent"]
+    results = summary["case_results"]
 
     json_report = artifacts_dir / "sre_eval_report.json"
     with open(json_report, "w", encoding="utf-8") as f:
@@ -135,7 +151,7 @@ def run_benchmark() -> dict[str, Any]:
         f.write("# Rapport d'Evaluation SRE - K-OIT Golden Set\n\n")
         f.write(f"- **Nombre total de cas evalues :** {total_cases}\n")
         f.write(
-            f"- **Taux de reussite global :** {summary['passed_cases']}/{total_cases} ($100\\%$)\n"
+            f"- **Taux de reussite global :** {summary['passed_cases']}/{total_cases} (${summary['passed_cases'] / total_cases * 100:.0f}\\%$)\n"
         )
         f.write(
             f"- **Precision de la cause racine (Root Cause Accuracy) :** ${root_cause_acc:.1f}\\%$\n"
@@ -163,10 +179,5 @@ def run_benchmark() -> dict[str, Any]:
                 f"| {r['eval_case_id']} | `{r['scenario']}` | `{r['root_cause_service']}` | {r['severity']} | {r['hitl_enforced']} | ${r['latency_ms']}\\text{{ ms}}$ | **{r['verdict']}** |\n"
             )
 
-    return summary
-
-
-if __name__ == "__main__":
-    report = run_benchmark()
     print("SRE Benchmark Completed Successfully:")
-    print(json.dumps(report, indent=2))
+    print(json.dumps(summary, indent=2))
