@@ -12,13 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-locals {
-  project_ids = {
-    default = var.project_id
-  }
-}
-
-
 # Get the project number
 data "google_project" "project" {
   project_id = var.project_id
@@ -42,16 +35,10 @@ resource "google_service_account" "app_sa" {
 
 # Grant application SA the required permissions to run the application
 resource "google_project_iam_member" "app_sa_roles" {
-  for_each = {
-    for pair in setproduct(keys(local.project_ids), var.app_sa_roles) :
-    join(",", pair) => {
-      project = local.project_ids[pair[0]]
-      role    = pair[1]
-    }
-  }
+  for_each = toset(var.app_sa_roles)
 
-  project    = each.value.project
-  role       = each.value.role
+  project    = var.project_id
+  role       = each.value
   member     = "serviceAccount:${google_service_account.app_sa.email}"
   depends_on = [resource.google_project_service.services]
 }
