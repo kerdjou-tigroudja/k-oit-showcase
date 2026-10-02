@@ -155,6 +155,34 @@ def test_mitigation_plan_human_in_the_loop() -> None:
     assert "Verification terminee" in plan.verification_script
 
 
+def test_db_pool_mitigation_targets_root_cause_not_first_symptom() -> None:
+    """Le rollout kubectl vise la cause racine, pas le premier service trie.
+
+    Sur db_pool_exhaustion, checkout-service est le symptome alphabetique
+    (impacted_services[0]) et order-service est la cause racine.
+    """
+    correlator = IncidentCorrelator()
+    db_result = ChaosSimulator.generate_scenario(ChaosScenarioType.DB_POOL_EXHAUSTION)
+    correlated = correlator.correlate(db_result.signals)
+    diagnosis = correlator.diagnose(correlated)
+
+    assert correlated.root_cause_service == "order-service"
+    assert diagnosis.root_cause_service == correlated.root_cause_service
+    assert diagnosis.impacted_services[0] == "checkout-service"
+
+    plan = correlator.build_mitigation_plan(diagnosis)
+    rollout = "\n".join(plan.rollback_commands + plan.restart_commands)
+    assert "deployment/order-service" in rollout
+    assert "deployment/checkout-service" not in rollout
+
+    tool_plan = generate_sre_mitigation_plan(scenario_type="db_pool_exhaustion")
+    tool_rollout = "\n".join(
+        tool_plan["rollback_commands"] + tool_plan["restart_commands"]
+    )
+    assert "deployment/order-service" in tool_rollout
+    assert "deployment/checkout-service" not in tool_rollout
+
+
 def test_tools_layer() -> None:
     """Verifie l'exposition des outils pour l'agent ADK 2.0."""
     scenarios = list_available_chaos_scenarios()
@@ -172,8 +200,6 @@ def test_tools_layer() -> None:
     assert diag_res["severity"] == "CRITICAL"
     assert diag_res["requires_human_approval"] is True
 
-    plan_res = generate_sre_mitigation_plan(
-        diag_res["incident_id"], scenario_type="db_pool_exhaustion"
-    )
+    plan_res = generate_sre_mitigation_plan(scenario_type="db_pool_exhaustion")
     assert plan_res["human_approval_required"] is True
     assert len(plan_res["recommended_actions"]) > 0

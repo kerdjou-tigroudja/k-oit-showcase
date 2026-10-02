@@ -232,6 +232,7 @@ class IncidentCorrelator:
             incident_id=incident_id,
             severity=severity,
             root_cause=root_cause,
+            root_cause_service=root_service,
             impacted_services=sorted(impacted_services),
             timeline=correlated.timeline,
             recommended_action=recommended_action,
@@ -248,11 +249,7 @@ class IncidentCorrelator:
         Returns:
             MitigationPlan avec actions recommandees, commandes de rollback et redemarrage.
         """
-        root_service = (
-            diagnosis.impacted_services[0]
-            if diagnosis.impacted_services
-            else "application"
-        )
+        root_service = diagnosis.root_cause_service.strip() or "application"
 
         recommended_actions = [
             f"1. Emettre une alerte de crise SRE avec la severite {diagnosis.severity.value}.",

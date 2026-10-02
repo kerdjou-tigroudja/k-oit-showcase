@@ -38,7 +38,7 @@ def test_tools_functional_interfaces():
     assert diagnosis["severity"] == "CRITICAL"
     assert diagnosis["requires_human_approval"] is True
 
-    plan = generate_sre_mitigation_plan(diagnosis["incident_id"], scenario_type="db_pool_exhaustion")
+    plan = generate_sre_mitigation_plan(scenario_type="db_pool_exhaustion")
     assert plan["human_approval_required"] is True
     assert len(plan["recommended_actions"]) > 0
     assert len(plan["rollback_commands"]) > 0
