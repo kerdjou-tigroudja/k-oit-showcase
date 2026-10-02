@@ -98,13 +98,14 @@ def correlate_and_diagnose(signals: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 def generate_sre_mitigation_plan(
-    incident_id: str, scenario_type: str = ""
+    incident_id: str = "", scenario_type: str = ""
 ) -> dict[str, Any]:
     """Produit un plan de mitigation SRE securise avec contrainte Human-in-the-Loop stricte.
 
     Args:
-        incident_id: Identifiant unique de l'incident a traiter.
-        scenario_type: Type de scenario optionnel pour orienter le plan de secours.
+        incident_id: Identifiant du plan generique, hors scenario de chaos.
+        scenario_type: Type de scenario (ex: 'db_pool_exhaustion'). S'il est fourni,
+            le plan cible la cause racine correlee et ignore incident_id.
 
     Returns:
         Plan de mitigation structure avec actions recommandees, rollback et redemarrage.
@@ -114,10 +115,15 @@ def generate_sre_mitigation_plan(
         correlated = correlator_instance.correlate(result.signals)
         diagnosis = correlator_instance.diagnose(correlated)
     else:
+        if not incident_id:
+            raise ValueError(
+                "incident_id est requis lorsqu'aucun scenario_type n'est fourni"
+            )
         diagnosis = IncidentDiagnosis(
             incident_id=incident_id,
             severity=SeverityLevel.MAJOR,
             root_cause="Defaillance operationnelle non specifiee necessitant investigation.",
+            root_cause_service="core-application",
             impacted_services=["core-application"],
             timeline=[],
             recommended_action="Inspecter les métriques et journaux applicatifs.",

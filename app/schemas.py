@@ -75,6 +75,10 @@ class IncidentDiagnosis(BaseModel):
     root_cause: str = Field(
         ..., description="Description precise de la cause racine isolee"
     )
+    root_cause_service: str = Field(
+        ...,
+        description="Service identifie comme cause racine par le correlateur",
+    )
     impacted_services: list[str] = Field(
         default_factory=list, description="Liste des services impactes"
     )
