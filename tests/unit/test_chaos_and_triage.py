@@ -1,4 +1,4 @@
-# Copyright 2026 Google LLC
+# Copyright 2026 Kerdjou Tigroudja (https://kerdjou.dev)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -83,7 +83,6 @@ def test_correlator_causal_isolation() -> None:
     """Verifie l'isolation causale entre cause racine et symptomes collateraux."""
     correlator = IncidentCorrelator()
 
-    # Test Scenario 1: DB Pool Exhaustion
     db_result = ChaosSimulator.generate_scenario(ChaosScenarioType.DB_POOL_EXHAUSTION)
     correlated = correlator.correlate(db_result.signals)
     assert correlated.root_cause_service == "order-service"
@@ -102,7 +101,6 @@ def test_correlator_causal_isolation() -> None:
         or "pg_stat_activity" in diagnosis.verification_command
     )
 
-    # Test Scenario 2: OOM Crash
     oom_result = ChaosSimulator.generate_scenario(ChaosScenarioType.OOM_CRASH)
     correlated_oom = correlator.correlate(oom_result.signals)
     assert correlated_oom.root_cause_service == "recommendation-worker"
@@ -111,7 +109,6 @@ def test_correlator_causal_isolation() -> None:
     assert diagnosis_oom.severity == SeverityLevel.CRITICAL
     assert "recommender-api" in diagnosis_oom.impacted_services
 
-    # Test Scenario 3: Upstream Timeout
     upstream_result = ChaosSimulator.generate_scenario(
         ChaosScenarioType.UPSTREAM_API_TIMEOUT
     )
@@ -121,7 +118,6 @@ def test_correlator_causal_isolation() -> None:
     diagnosis_upstream = correlator.diagnose(correlated_upstream)
     assert diagnosis_upstream.severity == SeverityLevel.CRITICAL
 
-    # Test Scenario 4: TLS Cert Expiry
     tls_result = ChaosSimulator.generate_scenario(ChaosScenarioType.TLS_CERT_EXPIRY)
     correlated_tls = correlator.correlate(tls_result.signals)
     assert correlated_tls.root_cause_service == "api-ingress"
@@ -130,7 +126,6 @@ def test_correlator_causal_isolation() -> None:
     assert diagnosis_tls.severity == SeverityLevel.CRITICAL
     assert "openssl" in diagnosis_tls.verification_command
 
-    # Test Scenario 5: Disk Full
     disk_result = ChaosSimulator.generate_scenario(ChaosScenarioType.DISK_FULL)
     correlated_disk = correlator.correlate(disk_result.signals)
     assert correlated_disk.root_cause_service == "audit-logging-node"

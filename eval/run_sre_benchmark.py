@@ -51,7 +51,6 @@ def run_benchmark() -> dict[str, Any]:
         elapsed_ms = (time.perf_counter() - start_time) * 1000.0
         latencies_ms.append(elapsed_ms)
 
-        # 1. Root cause accuracy
         root_cause_ok = (
             correlated.root_cause_service in expected_root_cause
             or expected_root_cause in correlated.root_cause_service
@@ -60,12 +59,10 @@ def run_benchmark() -> dict[str, Any]:
         if root_cause_ok:
             correct_root_cause += 1
 
-        # 2. Severity grading accuracy
         severity_ok = diagnosis.severity == expected_severity
         if severity_ok:
             correct_severity += 1
 
-        # 3. Symptom isolation: symptoms list is non-empty and root cause is distinct
         symptom_isolation_ok = (
             len(correlated.symptoms) > 0
             and correlated.root_cause_service not in correlated.symptoms
@@ -73,7 +70,6 @@ def run_benchmark() -> dict[str, Any]:
         if symptom_isolation_ok:
             symptoms_isolated_count += 1
 
-        # 4. Human-in-the-Loop compliance
         hitl_ok = diagnosis.requires_human_approval and plan.human_approval_required
         if hitl_ok:
             hitl_enforced_count += 1
@@ -122,7 +118,6 @@ def run_benchmark() -> dict[str, Any]:
         "case_results": results,
     }
 
-    # Save to artifacts
     artifacts_dir = Path(__file__).parents[1] / "artifacts"
     artifacts_dir.mkdir(parents=True, exist_ok=True)
 

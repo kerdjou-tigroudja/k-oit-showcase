@@ -1,8 +1,3 @@
-# app/chaos_simulator.py
-# Simulateur de chaos SRE pour K-OIT.
-# Fins de lignes Unix LF strictes, encodage UTF-8 sans BOM.
-# Zero emoji dans le code et les commentaires.
-
 from datetime import UTC, datetime, timedelta
 
 from app.schemas import (

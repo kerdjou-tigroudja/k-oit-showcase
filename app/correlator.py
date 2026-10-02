@@ -1,4 +1,4 @@
-# Copyright 2026 Google LLC
+# Copyright 2026 Kerdjou Tigroudja (https://kerdjou.dev)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -76,7 +76,6 @@ class IncidentCorrelator:
             metric_name = str(p.get("metric_name", "")).lower()
             val = p.get("value", 0)
 
-            # Verification des patterns de cause racine premiere
             if (
                 "fatal" in msg
                 or "remaining connection slots" in msg
@@ -125,7 +124,6 @@ class IncidentCorrelator:
                     f"{sig.service}: {sig.signal_type} status {p.get('http_status', 'error')} ({msg[:80]})"
                 )
 
-        # Fallback si aucun pattern explicite trouve
         if root_cause_service == "unknown":
             root_cause_service = sorted_signals[0].service
             root_cause_signals.append(sorted_signals[0])
