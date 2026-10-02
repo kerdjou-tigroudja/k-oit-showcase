@@ -30,6 +30,20 @@ def test_terraform_cloud_run_definition():
     assert "limits" in service_tf
 
 
+def test_terraform_wires_bq_analytics_env():
+    """Cloud Run must receive the analytics dataset, bucket, and connection."""
+    service_tf = Path("infra/terraform/service.tf").read_text(encoding="utf-8")
+    assert 'name  = "BQ_ANALYTICS_DATASET_ID"' in service_tf
+    assert "google_bigquery_dataset.telemetry_dataset.dataset_id" in service_tf
+    assert 'name  = "BQ_ANALYTICS_GCS_BUCKET"' in service_tf
+    assert "google_storage_bucket.logs_data_bucket.name" in service_tf
+    assert 'name  = "BQ_ANALYTICS_CONNECTION_ID"' in service_tf
+    assert (
+        "${var.region}.${google_bigquery_connection.genai_telemetry_connection.connection_id}"
+        in service_tf
+    )
+
+
 def test_terraform_bigquery_telemetry():
     """Verify that BigQuery dataset and logging sinks are declared for GenAI telemetry."""
     telemetry_tf = Path("infra/terraform/telemetry.tf").read_text(encoding="utf-8")

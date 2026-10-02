@@ -21,6 +21,11 @@ from zoneinfo import ZoneInfo
 from google.adk.agents import Agent
 from google.adk.apps import App
 from google.adk.models import Gemini
+from google.adk.plugins.bigquery_agent_analytics_plugin import (
+    BigQueryAgentAnalyticsPlugin,
+    BigQueryLoggerConfig,
+)
+from google.cloud import bigquery
 from google.genai import types
 
 from app.tools import (
@@ -105,23 +110,27 @@ root_agent = Agent(
     ],
 )
 
-# Initialize BigQuery Analytics
+# Plugin registration stays at import. Dataset creation does not: a BigQuery
+# RPC here would run for every importer, including unit tests.
 _plugins = []
 _project_id = os.environ.get("GOOGLE_CLOUD_PROJECT")
 _dataset_id = os.environ.get("BQ_ANALYTICS_DATASET_ID", "adk_agent_analytics")
 _location = os.environ.get("GOOGLE_CLOUD_LOCATION", "europe-west9")
 
+
+def ensure_analytics_dataset() -> None:
+    """Create the analytics dataset at process startup, not at import."""
+    if not _project_id:
+        return
+    try:
+        client = bigquery.Client(project=_project_id)
+        client.create_dataset(f"{_project_id}.{_dataset_id}", exists_ok=True)
+    except Exception as exc:
+        logging.warning(f"Failed to create BigQuery analytics dataset: {exc}")
+
+
 if _project_id:
     try:
-        from google.cloud import bigquery
-        from google.adk.plugins.bigquery_agent_analytics_plugin import (
-            BigQueryAgentAnalyticsPlugin,
-            BigQueryLoggerConfig,
-        )
-
-        bq = bigquery.Client(project=_project_id)
-        bq.create_dataset(f"{_project_id}.{_dataset_id}", exists_ok=True)
-
         _plugins.append(
             BigQueryAgentAnalyticsPlugin(
                 project_id=_project_id,

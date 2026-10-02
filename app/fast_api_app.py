@@ -37,7 +37,9 @@ AGENT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 @contextlib.asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     from app.agent import app as adk_app
-    from app.agent import root_agent
+    from app.agent import ensure_analytics_dataset, root_agent
+
+    ensure_analytics_dataset()
 
     runner = Runner(
         app=adk_app,
