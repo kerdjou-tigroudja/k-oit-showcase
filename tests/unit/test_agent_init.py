@@ -1,9 +1,11 @@
 """Unit tests for ADK Agent initialization and tools inspection."""
 
+import ast
 import json
 from pathlib import Path
 
-from app.agent import root_agent
+import app.agent as agent
+from app.agent import ensure_analytics_dataset, root_agent
 from app.tools import (
     correlate_and_diagnose,
     generate_sre_mitigation_plan,
@@ -56,3 +58,95 @@ def test_agent_card_validity():
     assert "europe-west9" in data["runtime"]["region"]
     assert len(data["skills"]) >= 5
     assert data["evaluation_metrics"]["root_cause_accuracy"] == "100.0%"
+
+
+def _module_level_calls(source: str, name: str) -> list[int]:
+    """Line numbers of calls to ``name`` outside function and class bodies."""
+    tree = ast.parse(source)
+    found: list[int] = []
+    for node in tree.body:
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            continue
+        for child in ast.walk(node):
+            if not isinstance(child, ast.Call):
+                continue
+            func = child.func
+            called = None
+            if isinstance(func, ast.Name):
+                called = func.id
+            elif isinstance(func, ast.Attribute):
+                called = func.attr
+            if called == name:
+                found.append(child.lineno)
+    return found
+
+
+def test_lifespan_creates_analytics_dataset():
+    """The serving process creates the dataset during startup, not import."""
+    source = Path("app/fast_api_app.py").read_text(encoding="utf-8")
+    assert "ensure_analytics_dataset()" in source
+
+
+def test_create_dataset_is_not_called_at_import():
+    """Importing the agent must not create a BigQuery dataset."""
+    source = Path("app/agent.py").read_text(encoding="utf-8")
+    assert _module_level_calls(source, "create_dataset") == []
+    assert _module_level_calls(source, "ensure_analytics_dataset") == []
+    tree = ast.parse(source)
+    functions = {
+        node.name
+        for node in tree.body
+        if isinstance(node, ast.FunctionDef)
+    }
+    assert "ensure_analytics_dataset" in functions
+
+
+def test_ensure_analytics_dataset_creates_dataset(monkeypatch):
+    """Startup helper creates the configured dataset and tolerates an existing one."""
+    created: dict[str, object] = {}
+
+    class FakeClient:
+        def __init__(self, project: str) -> None:
+            created["project"] = project
+
+        def create_dataset(self, dataset_ref: str, exists_ok: bool = False) -> None:
+            created["ref"] = dataset_ref
+            created["exists_ok"] = exists_ok
+
+    monkeypatch.setattr(agent, "_project_id", "demo-project")
+    monkeypatch.setattr(agent, "_dataset_id", "adk_agent_analytics")
+    monkeypatch.setattr(agent.bigquery, "Client", FakeClient)
+
+    ensure_analytics_dataset()
+
+    assert created == {
+        "project": "demo-project",
+        "ref": "demo-project.adk_agent_analytics",
+        "exists_ok": True,
+    }
+
+
+def test_ensure_analytics_dataset_skips_without_project(monkeypatch):
+    """No project id means no BigQuery client."""
+    monkeypatch.setattr(agent, "_project_id", None)
+
+    class FakeClient:
+        def __init__(self, project: str) -> None:
+            raise AssertionError(project)
+
+    monkeypatch.setattr(agent.bigquery, "Client", FakeClient)
+    ensure_analytics_dataset()
+
+
+def test_env_example_omits_unread_a2a_remote_url():
+    """A2A_REMOTE_URL is not read by the app, so the example must not advertise it."""
+    example = Path(".env.example").read_text(encoding="utf-8")
+    assert "A2A_REMOTE_URL" not in example
+    assert "BQ_ANALYTICS_DATASET_ID" in example
+
+
+def test_services_comment_does_not_claim_agent_pins_global():
+    """agent.py reads GOOGLE_CLOUD_LOCATION; it does not pin that value to global."""
+    source = Path("app/app_utils/services.py").read_text(encoding="utf-8")
+    assert 'pins to "global"' not in source
+    assert "Cloud Run sets that to \"global\"" in source
