@@ -23,6 +23,11 @@ terraform {
       source  = "hashicorp/random"
       version = "~> 3.7.0"
     }
+    # time_sleep in telemetry.tf cannot load without this provider.
+    time = {
+      source  = "hashicorp/time"
+      version = "~> 0.14.0"
+    }
   }
 }
 

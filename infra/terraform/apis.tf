@@ -33,9 +33,3 @@ resource "google_project_service" "services" {
   service            = local.services[count.index]
   disable_on_destroy = false
 }
-
-resource "google_project_service_identity" "vertex_sa" {
-  provider = google-beta
-  project = var.project_id
-  service = "aiplatform.googleapis.com"
-}
