@@ -26,13 +26,7 @@ variable "project_id" {
 variable "region" {
   type        = string
   description = "Google Cloud region for resource deployment."
-  default     = "us-east1"
-}
-
-variable "telemetry_logs_filter" {
-  type        = string
-  description = "Log Sink filter for capturing telemetry data. Captures logs with the `traceloop.association.properties.log_type` attribute set to `tracing`."
-  default     = "labels.service_name=\"k-oit\" labels.type=\"agent_telemetry\""
+  default     = "europe-west9"
 }
 
 variable "app_sa_roles" {
