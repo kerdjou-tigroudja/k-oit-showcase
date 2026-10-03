@@ -3,10 +3,6 @@ __pycache__/
 *.py[cod]
 *.pyc
 *$py.class
-**/dist
-/tmp
-/out-tsc
-/bazel-out
 
 # C extensions
 *.so
@@ -60,22 +56,6 @@ coverage.xml
 *.mo
 *.pot
 
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
-
-# Flask stuff:
-instance/
-.webassets-cache
-
-# Scrapy stuff:
-.scrapy
-
-# Sphinx documentation
-docs/_build/
-
 # PyBuilder
 target/
 
@@ -96,13 +76,6 @@ Pipfile
 
 # PEP 582; used by e.g. github.com/David-OConnor/pyflow
 __pypackages__/
-
-# Celery stuff
-celerybeat-schedule
-celerybeat.pid
-
-# SageMath parsed files
-*.sage.py
 
 # Environments
 .env
@@ -150,13 +123,7 @@ dmypy.json
 tmp*
 .agents-cli-scripts/
 
-# Node
-**/node_modules
-npm-debug.log
-yarn-error.log
-
 # IDEs and editors
-.idea/
 .project
 .classpath
 .c9/
@@ -172,32 +139,16 @@ yarn-error.log
 !.vscode/extensions.json
 .history/*
 
-# Miscellaneous
-**/.angular/*
-/.angular/cache
-.sass-cache/
-/connect.lock
-/coverage
-/libpeerconnection.log
-testem.log
-/typings
-
 # System files
-.DS_Store
 Thumbs.db
-*.vscode*
 
 # ADK
 .adk/
 
 # Agent CLI specific
 .persist_vector_store
-tests/load_test/.results/*.html
-tests/load_test/.results/*.csv
-.locust_env
 my_env.tfvars
 .saved_chats
-.env
 .google-agents-cli/
 
 # A2A Inspector
